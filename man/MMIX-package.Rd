@@ -3,7 +3,7 @@
 \alias{MMIX}
 \docType{package}
 
-\title{Model Mixing}
+\title{Model selection uncertainty and model mixing}
 
 \description{
 Implement different types of model mixing and model selection methods for 
@@ -15,12 +15,12 @@ linear or logistic models.
 Package: \tab MMIX\cr
 Type: \tab Package\cr
 Version: \tab 2.9.1.\cr
-Date: \tab 2009-03-30\cr
+Date: \tab 2009-07-30\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
 }
 
-This package implements three model mixing methods methods, two model selection
+This package implements three model mixing methods, two model selection
 procedures and  three functions for model evaluation. 
   
 }

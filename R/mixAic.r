@@ -6,14 +6,14 @@ mixAic=function(data,family,maxVar=10){
 #family is a description of the error distribution  (gaussian, binomial)
 #maxVar is the maximum number of explanatory variables to include in the model 
 
-#Var0 is a vector with the explanatory variable names
-nom0<-names(data)
-Var0<-nom0[2:length(nom0)]
-#nomcoef0 contains the parameter names 
-nomcoef0<-nom0
-nomcoef0[1]<-"(Intercept)"
-#nobs is the number of data 
-nobs=length(data[,1])
+##Var0 is a vector with the explanatory variable names
+#nom0<-names(data)
+#Var0<-nom0[2:length(nom0)]
+##nomcoef0 contains the parameter names 
+#nomcoef0<-nom0
+#nomcoef0[1]<-"(Intercept)"
+##nobs is the number of data 
+#nobs=length(data[,1])
 
 #If the number of explanatory variables is higher than maxVar, the function
 #varSelec selects variables by stepwise selection
@@ -58,8 +58,8 @@ label<-c(NA,label)
 
 #Definition of matrices including the parameter estimators, their standard 
 #errors and AIC
-Tabcoef<-matrix(0,nrow=length(Vec_Fin),ncol=length(nomcoef0))
-TabSE<-matrix(0,ncol=length(nomcoef0),nrow=length(Vec_Fin))
+Tabcoef<-matrix(0,nrow=length(Vec_Fin),ncol=length(nomcoef))
+TabSE<-matrix(0,ncol=length(nomcoef),nrow=length(Vec_Fin))
 TabAIC <-matrix(ncol=1,nrow=length(Vec_Fin))
 
 #implementation of function glm for each model
@@ -67,8 +67,8 @@ for (i in c(1:length(Vec_Fin))) {
   model<- glm(formula(Vec_Fin[i]),family=family,data=data2)
   TabAIC[i]<- model$aic
   for (j in 1:length(model$coef)){
-    Tabcoef[i,which(nomcoef0==names(model$coef)[j])]=model$coef[j]
-    TabSE[i,which(nomcoef0==names(model$coef)[j])]=summary(model)[["coefficients"]][,2][j]
+    Tabcoef[i,which(nomcoef==names(model$coef)[j])]=model$coef[j]
+    TabSE[i,which(nomcoef==names(model$coef)[j])]=summary(model)[["coefficients"]][,2][j]
   }
 }
 
@@ -83,7 +83,7 @@ poids<-Tabvraissemblancegx/sommevraiss
 
 #Weighted sum of the estimated parameters 
 coefMix<-as.vector(t(Tabcoef)%*%as.matrix(poids))
-names(coefMix)<-nomcoef0
+names(coefMix)<-nomcoef
 
 #Probabilty of selection of variables
 Tabpoids<-Tabcoef
@@ -91,20 +91,20 @@ Tabpoids[Tabcoef!=0 ]<- 1
 VarPoids=t(poids)%*%Tabpoids
 
 #Standard deviation estimation of coefficients
-Stdhat<-matrix(ncol=1,nrow=length(nomcoef0))
-for(i in 1:length(nomcoef0)){
+Stdhat<-matrix(ncol=1,nrow=length(nomcoef))
+for(i in 1:length(nomcoef)){
   Stdhat[i]=sqrt(sum(poids*(TabSE[,i]^2+(Tabcoef[,i]-coefMix[i])^2)))
 }
 
 #Predictions
-varexplicatives<-as.matrix(cbind(1,data[,2:dim(data)[2]]))
+varexplicatives<-as.matrix(cbind(1,data[,2:dim(data2)[2]]))
 yhat<-varexplicatives%*%coefMix
 if(family$link=='logit'){
   yhat<-plogis(yhat)
 }
 #The three models with the highest AIC
 selec_aic<-sort(TabAIC,decreasing=FALSE)[1:3]
-Mod_selec<-which(TabAIC>=selec_aic[3])
+Mod_selec<-which(TabAIC<=selec_aic[3])
 AIC_selec<-TabAIC[Mod_selec]
 Mod_selec<-Vec_Fin[Mod_selec]
 BestModels<-cbind(Mod_selec,AIC_selec)
@@ -120,7 +120,7 @@ rownames(VecPlot)<-"Factor weights"
 names(VecPlot)<-nomcoef[-1]
 
 ListResult<-list(TabResult,ListSummary,VecPlot,coef=coefMix,fitted.values=as.vector(yhat),
-pne0=VarPoids,sd=as.vector(Stdhat),BestModels=BestModels,label=label,
+pne0=as.vector(VarPoids),sd=as.vector(Stdhat),BestModels=BestModels,label=label,
 modweights=as.vector(poids),allcoef=Tabcoef)
 
 #The first element of the list "ListResult" is visible when the output of 

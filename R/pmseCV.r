@@ -5,10 +5,13 @@ pmseCV=function(data, method=1, np, random=TRUE, npermu=100, file=NULL, ...) {
 #method=5: arms
 #"..." refers to the specific arguments of the method  
 
-#np must be higher than 1 and lower than the number of data minus the number of 
-#model parameters
-if (dim(data)[1]-np < dim(data)[2] | np<1 ){print("wrong value for np")}
-
+#np must be equal or higher than 1 and lower than the number of data minus the
+# number of parameters
+if(round(np)!=np)  stop("np value is not valid" ) 
+if ( np<1 ) stop("np must be equal to or higher than 1 ")
+if (dim(data)[1]-np < dim(data)[2]) stop(paste("np must be equal to or lower than",
+ dim(data)[1]-np))
+ 
 #Number of errors
 n.error=0
 #Number of convergence problems
@@ -61,7 +64,7 @@ if(np==1 & random==FALSE){
       if (length(file) !=0){
       #Predictions are stored in the file "file" , in case the program would 
       #stop
-      write.table(Tabindref,file,sep="\t",row.names=FALSE,dec=".")
+      write.table(Tabindref,file,sep="\t",row.names=TRUE,col.names=FALSE,dec=".")
       }
   
   }
@@ -139,7 +142,7 @@ if(np>1 | random==TRUE){
   
       
       #method==1 : fullModel;
-      if (method==1) coeffestime<-fullModel(data=train.sample,family=gaussian('identity'),...)$coef
+      if (method==1) coeffestime<-fullModel(data=train.sample,family=gaussian('identity'))$coef
       #method==2 : stepSel ;
       if (method==2)coeffestime<-stepSel(data=train.sample,family=gaussian('identity'),...)$coef
       #method==3 : bmaBic;
@@ -164,7 +167,7 @@ if(np>1 | random==TRUE){
     
       if (length(file) != 0){
       #Predictions are stored in a file in case the program would stop
-      write.table(indref,file,sep="\t",row.names=FALSE,dec=".",append=TRUE,col.names=FALSE)
+      write.table(indref,file,sep="\t",row.names=TRUE,dec=".",append=TRUE,col.names=FALSE)
       }
 
       permu=permu+1

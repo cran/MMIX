@@ -37,19 +37,16 @@ The frequency of selection of a variable is the part of the samples for which
 the estimated value of its coefficient is different from zero. Selection 
 frequency is an indicator of the stability of the method. Frequencies close to 
 0 or 1 indicates that the corresponding variables was almost never or always 
-selected in the bootstrap samples. The bootstrap estimators and their standard
-deviations are calculated, as well as the mean and standard deviation of the
-estimates across all the bootstrap samples.
-
+selected in the bootstrap samples. 
 
 }
 \value{
 bootFreq returns an object of class "classMMIX". A data frame with the main 
-results is printed whith the function "print", and a graphic with the weight of 
-the explanation variables is plotted with the function "plot". A \code{bootFreq} 
+results is printed with the function "print", and a graphic with the weights of 
+the explanatory variables is plotted with the function "plot". A \code{bootFreq} 
 object is a list including the following components:
   
-  \item{frequency }{ frequency of selection of each variables across the
+  \item{frequency }{ frequency of selection of each variable across the
    bootstrap samples}
   \item{coef }{ estimated parameter values across the bootstrap samples;
    a matrix with \code{nsample} rows}

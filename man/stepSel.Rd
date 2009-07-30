@@ -5,7 +5,7 @@
 
 
 \description{
- Select and estimate a model by stepwise regression, for linear and logistic
+ Select and fit a model by stepwise regression, for linear and logistic
   models.
 }
 
@@ -19,8 +19,8 @@ stepSel(data, family, direction = "both", criterion, trace = 0)
  \item{data }{ a data frame including the response variable (first column)
   and the explanatory variables. All the variables must be numeric and the 
   response variable value must be 0 or 1 for the logistic model.}
-  \item{family }{ a description of the error distribution (gaussian("identity")
-   or binomial("logit")). }
+  \item{family }{ a description of the error distribution (gaussian(\dQuote{identity})
+   or binomial(\dQuote{logit})). }
   \item{direction }{the type of stepwise search, can be one of \dQuote{both}
    (the default), \dQuote{backward} or \dQuote{forward}}
    \item{criterion}{ selection criterion at each step of the procedure.

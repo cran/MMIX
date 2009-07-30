@@ -36,7 +36,7 @@ includes no more than \code{maxVar} explanatory variables.
 }
 
 \value{
-  varSelec returns a data frame including the response variable and the
+  \code{varSelec} returns a data frame including the response variable and the
   selected explanatory variables.
 
 }

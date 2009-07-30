@@ -47,8 +47,11 @@ model predictions. Linear models should be evaluated using \code{pmseCV} and
 logistic models should be evaluated using \code{aucCV}.
 In the aucCV procedure, data are held out by pair (one data from each class, 0 
 and 1) at each iteration in order to calculate the corresponding AUC. The PMSE 
-(AUC) estimated by cross validation is the average of the PMSE (AUC) calculated 
+(AUC) estimated by cross validation is the mean of the PMSE (AUC) calculated 
 for possible sets of \code{np} observations (pairs).
+If \code{file} is not NULL, the \code{np} predictions (first column) and the
+ \code{np} corresponding observations (second column) are saved at each 
+ iteration. 
 
 
 }

@@ -13,11 +13,10 @@ tab1<-data[data[,1]==1,]
 n0=dim(tab0)[1]
 n1=dim(tab1)[1]
 
-if (np > min(n0,n1) -1 ){print(paste("np must be lower than ", min(n0,n1) -1))
- stop}
-if (np < 1 ){ print("np must equal to or higher than 1" ) 
-stop}
-
+if(round(np)!=np)  stop("np value is not valid" ) 
+if (np > min(n0,n1) -1) stop(paste("np must be equal to or lower than ", min(n0,n1) -1))
+if (np < 1 ) stop("np must be equal to or higher than 1" ) 
+  
 #Number of convergence and separation problems
 cv.error=0
 sep.error=0
@@ -33,10 +32,6 @@ if(np ==1 & random==FALSE){
     ind.test<-rbind(ind.test,cbind(which(data[,1]==0),rep(which(data[,1]==1)[i],n0)))
   }  
 
-  #Tabindref includes the response variable observations, and their predictions
-  # derived by cross-validation
-  Tabindref<-matrix(ncol=2,nrow=n.sample,dimnames=list(NULL,c("ind","ref")))
-  
   auc<-numeric()
   
   
@@ -104,8 +99,8 @@ if(np ==1 & random==FALSE){
 ###AUC estimated  by leave-np-pair-out cross validation on npermu permuations
 if(np>1 | random==TRUE){
   
-  #Tabindref includes the predictions and references derived by cross-validation
-  Tabindref<-{}
+  #Number of successive estimation problems 
+  pbna=0
   #auc is the vector of the npermu auc values
   auc<-matrix(ncol=1,nrow=npermu)
   
@@ -150,6 +145,11 @@ if(np>1 | random==TRUE){
     #method==5 : ARMS
     if(method==5)coeffestime<-arms(data=train.sample,family=binomial('logit'),...)$coef
     
+    if(length(which(is.na(coeffestime)))>0){pbna=pbna+1
+      if(pbna>100){ 
+        stop("100 samples created consecutively without one of them are estimable")
+      }else{ next }
+    }else{pbna=0}
     
     #Explanatory variables of the test.sample with 1 for the intercept
     varexplicatives<-as.matrix(cbind(rep(1,np*2),test.sample[,2:dim(data)[2]]))
@@ -157,10 +157,13 @@ if(np>1 | random==TRUE){
     coefficient<-as.matrix(coeffestime)
     #Prediction of the data i
     ychapeau<-varexplicatives%*%coefficient
-    # proba(Y =1) = inverse of the logistic function
+    # proba = inverse of the logistic function
     proba<-plogis(ychapeau)
-    #Tabindref includes the prediction and the observed value 
-    Tabindref=cbind(proba,test.sample[,1])
+    
+    if (length(file) !=0){
+      #Predictions are stored in the file "file" , in case the program would stop
+      write.table(cbind(proba,test.sample[,1]),file,sep="\t",append=TRUE,row.names=TRUE,col.names=FALSE)
+    }
     
     proba0<-proba[test.sample[,1]==0]
     proba1<-proba[test.sample[,1]==1]
@@ -172,11 +175,6 @@ if(np>1 | random==TRUE){
     }
     
     auc[permu]=compteur/(length(proba1)*length(proba0))
-    
-    if (length(file) !=0){
-    #auc are stored in a file, in case the program would stop
-    write.table(auc[permu],file,sep="\t",append=TRUE,row.names=FALSE,col.names=FALSE)
-   }
    
    permu=permu+1
   }
@@ -200,21 +198,18 @@ if (method==4) proba<-mixAic(family=binomial('logit'),data=data,...)$fitted.valu
 #method==5 : arms;
 if(method==5) proba<-arms(data=data,,family=binomial('logit'),...)$fitted.values
 
-# Tabindref includes the predictions and the observed values
-Tabindref={}
-Tabindref<-data.frame(indicateur=proba,ref=data[,1])
 
 #Estimation of the AUC with Mann-Whitney statistic
-yhat1<-Tabindref$indicateur[which(Tabindref$ref==0)]
-yhat2<-Tabindref$indicateur[which(Tabindref$ref==1)]
+proba0<-proba[which(data[,1]==0)]
+proba1<-proba[which(data[,1]==1)]
 
 compteur=0
-for( i in 1:length(yhat1)){
-for( j in 1:length(yhat2)){
-compteur=compteur+as.numeric(eval(yhat1[i]<yhat2[j]))+0.5*as.numeric(eval(yhat1[i]==yhat2[j]))
+for( i in 1:length(proba0)){
+for( j in 1:length(proba1)){
+compteur=compteur+as.numeric(eval(proba0[i]<proba1[j]))+0.5*as.numeric(eval(proba0[i]==proba1[j]))
 }}
 
-AUC=compteur/(length(yhat2)*length(yhat1))
+AUC=compteur/(length(proba0)*length(proba1))
 
 if (cv.error!=0) cat("Number of convergence problems",":",cv.error,"\n")
 if (sep.error!=0) cat("Number of separation problems",":",sep.error,"\n")

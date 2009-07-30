@@ -53,7 +53,7 @@ weights.
 \value{
   \code{arms} returns an object of class "MMIXclass". A data frame with the main
    results is printed with the function "print" and a graphic with the 
-   weight of the explanation variables is obtained with the function "plot". An 
+   weights of the explanatory variables is obtained with the function "plot". An 
    \code{arms} object is a list including the following components:
   
   \item{coef }{ a named vector of coefficients.}

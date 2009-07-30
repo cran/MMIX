@@ -20,9 +20,9 @@
 
 \arguments{
  \item{x}{object of type 'MMIXclass'.}
- \item{object}{object of type 'MMIXclass'.}
-  \item{...}{other parameters to be passed to \code{print.MMIXclass},
-   \code{plot.MMIXclass} or \code{summary.MMIXclass} }
+  \item{object}{object of type 'MMIXclass'.}
+  \item{...}{other parameters to be passed to \code{plot.MMIXclass}, 
+  \code{print.MMIXclass} or \code{summary.MMIXclass} }
 }
 
 \details{

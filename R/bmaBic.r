@@ -3,12 +3,12 @@ bmaBic=function(data,family,maxVar=10){
 #data is a data frame including the response variable (first column) and the 
 #explanatory variables 
 
-#Var0 is a vector with the explanatory variables names
-nom0<-names(data)
-Var0<-nom0[2:length(nom0)]
-#nomcoef0 contains the parameter names 
-nomcoef0<-nom0
-nomcoef0[1]<-"(Intercept)"
+##Var0 is a vector with the explanatory variables names
+#nom0<-names(data)
+#Var0<-nom0[2:length(nom0)]
+##nomcoef0 contains the parameter names 
+#nomcoef0<-nom0
+#nomcoef0[1]<-"(Intercept)"
 
 #If the number of explanatory variables is higher than maxVar, the function 
 #varSelec selects variables by stepwise selection
@@ -22,6 +22,7 @@ Var<-nom[2:length(nom)]
 nomcoef<-nom
 nomcoef[1]<-"(Intercept)"
 nobs=dim(data2)[1] 
+
 #Creation of all the linear models from all combinations of the explanatory 
 #variables
 #Sorties[[i]] contains all the combinations of Var with i elements
@@ -57,9 +58,9 @@ label<-c(NA,label)
 #Table for BIC
 TabBIC <-matrix(nrow=length(Vec_Fin),ncol=1)
 #Table for parameter estimates
-Tabparam<-matrix(0,ncol=length(nomcoef0),nrow=length(Vec_Fin))
+Tabparam<-matrix(0,ncol=length(nomcoef),nrow=length(Vec_Fin))
 #Table for standard deviation of the parameter estimates
-TabSE<-matrix(0,ncol=length(nomcoef0),nrow=length(Vec_Fin))
+TabSE<-matrix(0,ncol=length(nomcoef),nrow=length(Vec_Fin))
 
 #Glm estimation, BIC calculation
 Model0<- glm(formula(a),family=family,data=data2)
@@ -72,8 +73,8 @@ for (n in c(1:(length(Vec_Fin)))) {
   TabBIC[n]<-BIC
      
   for(j in 1:length(Model$coef)){
-    Tabparam[n,which(names(Model$coef)[j]==nomcoef0)]=Model$coef[j]
-    TabSE[n,which(nomcoef0==names(Model$coef)[j])]=summary(Model)[["coefficients"]][,2][j]
+    Tabparam[n,which(names(Model$coef)[j]==nomcoef)]=Model$coef[j]
+    TabSE[n,which(nomcoef==names(Model$coef)[j])]=summary(Model)[["coefficients"]][,2][j]
   }
 }
 
@@ -82,25 +83,25 @@ Weight_Model<-exp(-TabBIC/2)/sum(exp(-TabBIC/2))
 
 #Factor weights : proba(factor(i) != 0)  = sum(weight(model n), factor(i) 
 #belongs to model n )
-Pne0<-matrix(0,ncol=1,nrow=length(nomcoef0))
-for( j in 1:length(nomcoef0)){
+Pne0<-matrix(0,ncol=1,nrow=length(nomcoef))
+for( j in 1:length(nomcoef)){
   Pne0[j]=sum(Weight_Model[which(Tabparam[,j]!=0)])
 }
 
 #Estimator ponderation by model performances
-ParamBMA<-matrix(nrow=1,ncol=length(nomcoef0))
+ParamBMA<-matrix(nrow=1,ncol=length(nomcoef))
 ParamBMA=t(Weight_Model)%*%Tabparam
 ParamBMA<-as.vector(ParamBMA)
-names(ParamBMA)=nomcoef0
+names(ParamBMA)=nomcoef
 
 #Estimated standard deviation of coefficients
-Stdhat<-matrix(ncol=1,nrow=length(nomcoef0))
-for(i in 1:length(nomcoef0)){
+Stdhat<-matrix(ncol=1,nrow=length(nomcoef))
+for(i in 1:length(nomcoef)){
   Stdhat[i]=sqrt(sum(Weight_Model*(TabSE[,i]^2+Tabparam[,i]^2))-ParamBMA[i]^2)
 }
 
 #Predictions
-varexplicatives<-as.matrix(cbind(1,data[,2:dim(data)[2]]))
+varexplicatives<-as.matrix(cbind(1,data[,2:dim(data2)[2]]))
 yhat<-varexplicatives%*%ParamBMA
 if(family$link=='logit'){
   yhat<-plogis(yhat)
@@ -120,7 +121,7 @@ ListSummary<-list(coef=ParamBMA,pne0=as.vector(Pne0),fitted.values=as.vector(yha
 
 VecPlot<-t(as.matrix(Pne0)[-1])
 rownames(VecPlot)<-"Factor weights"
-names(VecPlot)<-nomcoef0[-1]
+names(VecPlot)<-nomcoef[-1]
 
 ListResult<-list(TabResult,ListSummary,VecPlot,coef=ParamBMA,fitted.values=as.vector(yhat),
 pne0=as.vector(Pne0),sd=as.vector(Stdhat),BestModels=BestModels,label=label,modweights=as.vector(Weight_Model),allcoef=Tabparam)
