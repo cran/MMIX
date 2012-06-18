@@ -119,8 +119,9 @@ while(iteration <= nboot) {
    MeanPne0=TabFreq}
   
   Tabinter={}
+  sdT<-apply(as.data.frame(t(Tabcoef[,1:iteration])),2,"sd")
   Tabinter<-data.frame(names=nomcoef,coef=Tabcoef[,1:iteration],
-  mean=rowSums(Tabcoef)/iteration,sd=sd(as.data.frame(t(Tabcoef[,1:iteration]))),
+  mean=rowSums(Tabcoef)/iteration,sd=sdT,
   frequency=TabFreq,Pne0=MeanPne0)
 
   if(length(file) != 0){

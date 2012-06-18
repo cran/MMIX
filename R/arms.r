@@ -238,7 +238,7 @@ while (iteration <= nsample) {
   #Likelihoods of the test.sample for all the selected models
   if(family$family=="gaussian"){
     delta<-colSums((test.sample[,1]-ychapeau)^2)
-    b<-Tabvariance^(-0.5*dim(test.sample)[2])*exp(-delta/(2*Tabvariance))
+    b<-Tabvariance^(-0.5*dim(test.sample)[1])*exp(-delta/(2*Tabvariance))
   }
   
   if(family$family=="binomial"){

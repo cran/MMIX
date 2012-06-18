@@ -14,8 +14,8 @@ linear or logistic models.
 \tabular{ll}{
 Package: \tab MMIX\cr
 Type: \tab Package\cr
-Version: \tab 2.9.1.\cr
-Date: \tab 2009-07-30\cr
+Version: \tab 2.15.0.\cr
+Date: \tab 2012-06-18\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
 }
